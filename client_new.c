@@ -17,7 +17,7 @@ int main(){
      FILE *g;
      struct shmid_ds buf;
 
-     printf("\n\033[1;35m[INFO] Client working.\n");
+     printf("\n\033[1;35m[INFO]\033[0m Client working.\n");
      /* Получим доступ к разделяемой памяти */
      if ((shmid = shmget(key, sizeof(Message), 0)) < 0) {
          perror("\033[1;31m[ERROR] shmget.");
@@ -57,7 +57,7 @@ int main(){
          return 1;
      }
 
-     strncpy(s, msgptr->buff, strlen(s));
+     strncpy(s, msgptr->buff, MAXBUFF);
 
      if(strlen(s) < 1){
          printf("\033[1;31m[ERROR] Memory are empty.\n");
@@ -72,17 +72,21 @@ int main(){
 
      if(access("haram", F_OK)==-1){
 
-          printf("\n\033[1;35m[INFO] Number pros connecting to memory: %hu\n", buf.shm_nattch);
+          printf("\n\033[1;35m[INFO]\033[0m Number pros connecting to memory: \033[1;35m%hu\n\n", buf.shm_nattch);
           fd = creat("haram",0666);
           write(fd,s,strlen(s));
-          printf("|STAT|\n");
-          system("ps -Al | grep -f haram | awk '{print $11}'|sed 's/.$//'");
+          printf("| STAT | COMMAND |\n");
+          system("ps -eAo pid,stat,command| grep -f haram|awk '{print $2,$3, $4, $5}'");
+          printf("\033[0m");
           system("rm haram");
           close(fd);
 
       }
     else printf("\033[1;35m[INFO] Rename your file: haram\n");
-     /* Отключимся от области */
+
+    printf("\n\033[1;35m[INFO]\033[0m PROCESS STATE CODES\n\nD \033[1;35muninterruptible sleep (usually IO)\n\033[0mR \033[1;35mrunning or runnable (on run queue)\n\033[0mS \033[1;35minterruptible sleep (waiting for an event to complete)\n\033[0mT \033[1;35mstopped, either by a job control signal or because it is being traced.\n\033[0mW \033[1;35mpaging (not valid since the 2.6.xx kernel)\n\033[0mX \033[1;35mdead (should never be seen)\n\033[0mZ \033[1;35mdefunct ('zombie') process, terminate but not reaped by its parent.\n\nFor \033[0mBSD\033[1;35m formats and when the stat keyword is used, additional characters may\n\033[0m<\033[1;35m high-priority (not nice to other users)\n\033[0mN\033[1;35m low-priority (nice to other users)\n\033[0mL\033[1;35m has pages locked into memory (for real-time and custom IO)\n\033[0ms\033[1;35m is a session leader\n\033[0ml\033[1;35m is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)\n\033[0m+\033[1;35m is in the foreground process group.\n\n");
+
+    /* Отключимся от области */
     if (shmdt(msgptr) < 0) {
         perror("\033[1;31m[ERROR] shmdt.");
         printf("\033[0m");
