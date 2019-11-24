@@ -1,5 +1,5 @@
 #define MAXBUFF 120
-#define PERM 0666
+#define PERM 0600
 /* Структура данных в разделяемой памяти */
 typedef struct mem_msg {
      int segment;
@@ -15,5 +15,5 @@ typedef struct mem_msg {
 // "на отмените операцию", если процесс SEM_UNDO.
 // В случае успешного выполнения semop возвращает 0, неудачи — -1.
 
-struct sembuf unlock[1] = {0, 1, 0};
+struct sembuf unlock[1] = {0, +1, 0};
 struct sembuf lock[1] = {0, -1, 0};
